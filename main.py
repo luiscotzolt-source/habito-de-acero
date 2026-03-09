@@ -24,37 +24,45 @@ with st.sidebar:
     dias = st.slider("Días a la semana:", 1, 7, 3)
     tiempo = st.slider("Minutos por sesión:", 15, 120, 60)
 
-# --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS ---
+# --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS (NUBE SIMULADA) ---
 st.header(f"🏋️ Rutina Semanal Dinámica para {alias}")
 
-# Base de datos lógica (Nube simulada)
+# Base de datos de ejercicios por categorías para variar cada día
 db_ejercicios = {
     "Empuje": [
         {"n": "Flexiones Diamante", "s": 4, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1598971639058-fab3c03af452?w=400"},
-        {"n": "Press Militar con Banda", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1532029837206-aba2b762a638?w=400"}
+        {"n": "Press Militar con Banda", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1532029837206-aba2b762a638?w=400"},
+        {"n": "Fondos en silla", "s": 3, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
     ],
     "Tracción": [
         {"n": "Remo con Mancuerna", "s": 4, "r": "15", "d": "60s", "img": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400"},
-        {"n": "Dominadas o Jalones", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
+        {"n": "Dominadas o Jalones", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"},
+        {"n": "Curl de bíceps", "s": 3, "r": "12", "d": "45s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
     ],
     "Pierna": [
         {"n": "Sentadilla Búlgara", "s": 3, "r": "12", "d": "90s", "img": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400"},
-        {"n": "Peso Muerto Rumano", "s": 4, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"}
+        {"n": "Peso Muerto Rumano", "s": 4, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"},
+        {"n": "Elevación de talones", "s": 4, "r": "20", "d": "30s", "img": "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=400"}
     ],
     "Salud": [
         {"n": "Puente Glúteo", "s": 3, "r": "15", "d": "45s", "img": "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400"},
-        {"n": "Gato-Camello (Movilidad)", "s": 3, "r": "10", "d": "30s", "img": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"}
+        {"n": "Gato-Camello (Movilidad)", "s": 3, "r": "10", "d": "30s", "img": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"},
+        {"n": "Plancha sobre rodillas", "s": 3, "r": "30s", "d": "45s", "img": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400"}
     ]
 }
 
-# Lógica de distribución por días: Alternancia real
+# Lógica de distribución: Cada día una rutina distinta
 for d_idx in range(1, dias + 1):
     with st.expander(f"📅 DÍA {d_idx} - Plan Específico", expanded=(d_idx==1)):
+        # Si hay lesiones, la rutina siempre es de Salud. Si no, alterna por día.
         if len(salud) > 0:
             categoria = "Salud"
-        elif d_idx % 3 == 1: categoria = "Empuje"
-        elif d_idx % 3 == 2: categoria = "Tracción"
-        else: categoria = "Pierna"
+        elif d_idx % 3 == 1: 
+            categoria = "Empuje"
+        elif d_idx % 3 == 2: 
+            categoria = "Tracción"
+        else: 
+            categoria = "Pierna"
         
         for ej in db_ejercicios[categoria]:
             c1, c2 = st.columns([1, 2])
@@ -81,10 +89,19 @@ if st.button("🚀 Registrar Entrenamiento Completado"):
     st.session_state.session_log.append(nueva_entrada)
     st.success("¡Datos guardados!")
 
-# Visualización de Tabla (Línea 85 corregida y cerrada)
+# Visualización de Tabla y Descarga (Línea 90 corregida)
 if st.session_state.session_log:
     df_progresion = pd.DataFrame(st.session_state.session_log)
     st.subheader("📋 Tabla de Progreso en Pantalla")
     st.table(df_progresion) 
     
-    csv = df_progresion.to_csv(index=
+    # Generación de CSV sin errores de cierre
+    csv = df_progresion.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Descargar Avance para Asesoría Gemini",
+        data=csv,
+        file_name=f"progreso_{alias}.csv",
+        mime="text/csv"
+    )
+
+st.warning("⚠️ Nota: Sube este archivo al chat cada 30 días para que yo (Gemini) analice tu progreso.")
