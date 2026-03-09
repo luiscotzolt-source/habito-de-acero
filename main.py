@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# CONFIGURACIÓN PROFESIONAL
+# CONFIGURACIÓN DE INGENIERÍA
 st.set_page_config(page_title="Hábito de Acero: Cloud AI", layout="wide")
 st.title("🛡️ Hábito de Acero: Ingeniería Humana & Cloud AI")
 
@@ -14,7 +14,7 @@ with st.sidebar:
     st.header("📋 Sección 1: Perfil Bio")
     alias = st.text_input("Nombre o Alias:", "Usuario_Pro")
     edad = st.number_input("Edad:", 15, 95, 30)
-    peso = st.number_input("Peso (kg):", 40, 200, 75)
+    peso = st.number_input("Peso (kg):", 40.0, 200.0, 75.0)
 
     st.header("🏥 Sección 2: Salud")
     salud = st.multiselect("Limitantes:", ["Artritis", "Diabetes", "Presión Alta", "Lumbalgia", "Lesión Rodilla"])
@@ -27,27 +27,27 @@ with st.sidebar:
 # --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS ---
 st.header(f"🏋️ Rutina Semanal Dinámica para {alias}")
 
-# Base de datos lógica (Simulación de la Nube)
+# Base de datos lógica (Nube simulada)
 db_ejercicios = {
     "Empuje": [
-        {"n": "Flexiones Diamante", "s": 4, "r": 12, "d": "60s", "img": "https://images.unsplash.com/photo-1598971639058-fab3c03af452?w=400"},
-        {"n": "Press Militar con Banda", "s": 3, "r": 10, "d": "90s", "img": "https://images.unsplash.com/photo-1532029837206-aba2b762a638?w=400"}
+        {"n": "Flexiones Diamante", "s": 4, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1598971639058-fab3c03af452?w=400"},
+        {"n": "Press Militar con Banda", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1532029837206-aba2b762a638?w=400"}
     ],
     "Tracción": [
-        {"n": "Remo con Mancuerna", "s": 4, "r": 15, "d": "60s", "img": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400"},
-        {"n": "Dominadas o Jalones", "s": 3, "r": 10, "d": "90s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
+        {"n": "Remo con Mancuerna", "s": 4, "r": "15", "d": "60s", "img": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400"},
+        {"n": "Dominadas o Jalones", "s": 3, "r": "10", "d": "90s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
     ],
     "Pierna": [
-        {"n": "Sentadilla Búlgara", "s": 3, "r": 12, "d": "90s", "img": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400"},
-        {"n": "Peso Muerto Rumano", "s": 4, "r": 12, "d": "60s", "img": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"}
+        {"n": "Sentadilla Búlgara", "s": 3, "r": "12", "d": "90s", "img": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400"},
+        {"n": "Peso Muerto Rumano", "s": 4, "r": "12", "d": "60s", "img": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"}
     ],
     "Salud": [
-        {"n": "Puente Glúteo", "s": 3, "r": 15, "d": "45s", "img": "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400"},
-        {"n": "Movilidad de Cadera", "s": 3, "r": "1 min", "d": "30s", "img": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"}
+        {"n": "Puente Glúteo", "s": 3, "r": "15", "d": "45s", "img": "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400"},
+        {"n": "Gato-Camello (Movilidad)", "s": 3, "r": "10", "d": "30s", "img": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"}
     ]
 }
 
-# Lógica de distribución por días (AQUÍ CAMBIAN LOS EJERCICIOS)
+# Lógica de distribución por días: Alternancia real
 for d_idx in range(1, dias + 1):
     with st.expander(f"📅 DÍA {d_idx} - Plan Específico", expanded=(d_idx==1)):
         if len(salud) > 0:
@@ -71,15 +71,20 @@ if 'session_log' not in st.session_state:
     st.session_state.session_log = []
 
 if st.button("🚀 Registrar Entrenamiento Completado"):
-    st.session_state.session_log.append({
+    nueva_entrada = {
         "Fecha": datetime.now().strftime("%Y-%m-%d"),
         "Alias": alias,
         "Meta": objetivo,
         "Sesión": f"Día {len(st.session_state.session_log) + 1}",
         "Estatus": "Completado"
-    })
-    st.success("¡Datos sincronizados!")
+    }
+    st.session_state.session_log.append(nueva_entrada)
+    st.success("¡Datos guardados!")
 
-# Visualización de Tabla
-if st.session_state.log_entrenos if 'log_entrenos' in locals() else st.session_state.session_log:
-    df = pd.DataFrame(st.session_
+# Visualización de Tabla (Línea 85 corregida y cerrada)
+if st.session_state.session_log:
+    df_progresion = pd.DataFrame(st.session_state.session_log)
+    st.subheader("📋 Tabla de Progreso en Pantalla")
+    st.table(df_progresion) 
+    
+    csv = df_progresion.to_csv(index=
