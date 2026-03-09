@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import random
 
+
 # Configuración inicial
 st.set_page_config(page_title="Hábito de Acero", page_icon="🛡️")
 
@@ -93,9 +94,7 @@ st.download_button(
     mime='text/csv',
 )
 
-import streamlit as st
-import pandas as pd
-from datetime import datetime
+
 
 # --- CONFIGURACIÓN Y ESTILO ---
 st.set_page_config(page_title="Hábito de Acero IA", page_icon="🤖", layout="wide")
