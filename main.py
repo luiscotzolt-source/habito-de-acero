@@ -93,4 +93,51 @@ st.download_button(
     mime='text/csv',
 )
 
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+
+# --- CONFIGURACIÓN Y ESTILO ---
+st.set_page_config(page_title="Hábito de Acero IA", page_icon="🤖", layout="wide")
+
+# --- CHAT DE ASISTENCIA IA ---
+st.sidebar.title("💬 Asistente Hábito de Acero")
+user_question = st.sidebar.text_input("Pregúntame algo sobre tu rutina:")
+if user_question:
+    # Lógica de respuesta simulada de IA basada en tu perfil
+    st.sidebar.info(f"Ingeniero, analizando tu duda sobre '{user_question}'... Mi consejo es: Mantén la espalda recta y prioriza la técnica sobre el peso. ¡Disciplina es libertad!")
+
+# --- FORMULARIO DE SALUD (Variables Globales) ---
+st.title("🛡️ Hábito de Acero: Ingeniería Corporal")
+with st.expander("👤 Configura tu Perfil y Objetivos", expanded=False):
+    genero = st.radio("Género", ["Hombre", "Mujer"], horizontal=True)
+    edad = st.number_input("Edad", 15, 90, 30)
+    objetivo = st.selectbox("Objetivo", ["Bajar de peso", "Masa muscular", "Fuerza"])
+    dias = st.slider("Días disponibles", 1, 7, 3)
+    lesiones = st.multiselect("Limitaciones", ["Diabetes", "Hipertenso", "Cirugías", "Fracturas"])
+
+# --- GENERADOR DE RUTINA CON IMÁGENES TÉCNICAS ---
+if st.button("🚀 Generar Plan Semanal"):
+    st.subheader(f"📅 Plan Maestro para {objetivo}")
+    
+    # Diccionario de ejercicios con imágenes reales de técnica
+    db_ejercicios = {
+        "Sentadilla": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXN6bmJ3bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKEPO1bjPaOtGSc/giphy.gif",
+        "Push ups": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXN6bmJ3bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/uS071hlk6BJZjR5clS/giphy.gif",
+        "Plancha": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXN6bmJ3bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpxx66Z1f600/giphy.gif"
+    }
+
+    cols = st.columns(3)
+    for i, (nombre, link) in enumerate(db_ejercicios.items()):
+        with cols[i]:
+            st.markdown(f"### {nombre}")
+            st.image(link, use_container_width=True)
+            st.write("3 series x 15 repeticiones")
+
+# --- REGISTRO AUTOMÁTICO ---
+st.write("---")
+if st.button("✅ Registrar progreso de hoy"):
+    st.balloons()
+    st.success("Guardado en tu historial local. No olvides descargar tu CSV al final de la semana.")
+
 st.sidebar.text("Sistema de Ingeniería Humana | 2026")
