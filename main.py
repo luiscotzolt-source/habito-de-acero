@@ -3,86 +3,86 @@ import pandas as pd
 from datetime import datetime
 import random
 
-# 1. Configuración de Página
-st.set_page_config(page_title="Hábito de Acero - IA Fitness", page_icon="🛡️")
+# 1. Configuración de la Aplicación
+st.set_page_config(page_title="Hábito de Acero: IA Fitness", page_icon="🛡️", layout="wide")
 
-# 2. Base de Datos de Frases Motivacionales
+# 2. Motor de Motivación
 frases = [
     "La disciplina es el puente entre las metas y los logros.",
     "La pereza es el enemigo, la constancia es tu armadura.",
-    "No te detengas hasta estar orgulloso.",
-    "Ingeniería Humana: Construyendo tu mejor versión."
+    "Ingeniería humana: Construyendo una versión más fuerte.",
+    "No te detengas hasta estar orgulloso."
 ]
 
-st.title("🛡️ Hábito de Acero: Asistente IA")
-st.markdown(f"**Mensaje del día:** *{random.choice(frases)}*")
+st.title("🛡️ Hábito de Acero: Asistente de Entrenamiento IA")
+st.info(f"💡 {random.choice(frases)}")
 
-# 3. Formulario de Perfil (Algoritmo de Diagnóstico)
-with st.sidebar:
-    st.header("📋 Perfil de Usuario")
-    genero = st.selectbox("Género", ["Hombre", "Mujer"])
-    edad = st.number_input("Edad", 15, 90, 30)
-    
-    st.subheader("🏥 Historial de Salud")
-    diabetes = st.checkbox("Diabetes")
-    hipertenso = st.checkbox("Hipertensión")
-    cirugias = st.checkbox("Cirugías Recientes")
-    fracturas = st.checkbox("Fracturas Previas")
-    
-    st.subheader("🎯 Objetivos y Tiempo")
-    meta = st.radio("Meta principal", ["Bajar de peso", "Masa muscular", "Fuerza"])
-    dias = st.slider("Días a la semana", 1, 7, 3)
-    tiempo = st.slider("Minutos por sesión", 15, 120, 45)
+# 3. Formulario de Diagnóstico (Algoritmo de Salud)
+with st.expander("📝 Configura tu Perfil y Objetivos", expanded=True):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        genero = st.selectbox("Género", ["Hombre", "Mujer"])
+        edad = st.number_input("Edad", 15, 95, 30)
+    with col2:
+        meta = st.radio("Objetivo", ["Bajar de peso", "Masa muscular", "Fuerza"])
+        dias_sem = st.slider("Días a la semana", 1, 7, 3)
+    with col3:
+        tiempo_min = st.slider("Minutos por sesión", 15, 120, 45)
 
-# 4. Motor de IA: Generador de Rutinas
+    st.write("**Condiciones Médicas / Lesiones:**")
+    c1, c2, c3, c4 = st.columns(4)
+    diabetes = c1.checkbox("Diabetes")
+    hipertension = c2.checkbox("Hipertensión")
+    cirugia = c3.checkbox("Cirugías")
+    fractura = c4.checkbox("Fracturas")
+
+# 4. Lógica de IA: Prescripción de Ejercicios
+st.divider()
 st.header("🏋️ Tu Rutina Personalizada")
 
-def generar_rutina():
-    # Lógica de seguridad
-    if cirugias or fracturas:
-        tipo = "Movilidad y Recuperación"
-        ejercicio = "Estiramientos asistidos y caminata lenta"
-        img = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500"
-    elif hipertenso or diabetes:
-        tipo = "Cardio de Bajo Impacto"
-        ejercicio = "Caminata a ritmo constante o Elíptica"
-        img = "https://images.unsplash.com/photo-1594882645126-14020914d58d?w=500"
+def generar_ejercicios():
+    # Diccionario de recomendaciones basadas en el perfil
+    if cirugia or fractura:
+        return "Movilidad Suave", "Estiramientos asistidos y rotaciones", "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600"
+    elif hipertension or diabetes:
+        return "Cardio Moderado", "Caminata rápida o bicicleta estática", "https://images.unsplash.com/photo-1594882645126-14020914d58d?w=600"
     elif meta == "Masa muscular":
-        tipo = "Hipertrofia Adaptada"
-        ejercicio = "Sentadillas y Flexiones (controladas)"
-        img = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"
+        return "Hipertrofia", "Sentadillas, Flexiones y Dominadas", "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600"
     else:
-        tipo = "Circuito de Fuerza"
-        ejercicio = "Burpees suaves y Planchas"
-        img = "https://images.unsplash.com/photo-1541534741688-6078c64b52d2?w=500"
-    
-    return tipo, ejercicio, img
+        return "Resistencia", "Burpees, Planchas y Saltos", "https://images.unsplash.com/photo-1541534741688-6078c64b52d2?w=600"
 
-tipo, ejer, imagen = generar_rutina()
+tipo, nombre_ej, url_img = generar_ejercicios()
 
-col1, col2 = st.columns(2)
-with col1:
-    st.success(f"**Tipo:** {tipo}")
-    st.write(f"**Ejercicio Principal:** {ejer}")
-    st.write(f"**Duración:** {tiempo} minutos")
-with col2:
-    st.image(imagen, caption="Ejemplo técnico del ejercicio")
+col_a, col_b = st.columns([1, 1])
+with col_a:
+    st.success(f"### Enfoque: {tipo}")
+    st.write(f"**Ejercicio sugerido:** {nombre_ej}")
+    st.write(f"**Plan:** {dias_sem} días a la semana durante {tiempo_min} min.")
+with col_b:
+    st.image(url_img, caption="Ejemplo técnico del ejercicio")
 
-# 5. Registro Automático y Descarga CSV
+# 5. Registro de Progreso y Descarga
 st.divider()
-st.subheader("📈 Registro de Avance")
+st.subheader("📈 Mi Registro de Avance")
 
-if 'datos' not in st.session_state:
-    st.session_state.datos = pd.DataFrame(columns=['Fecha', 'Ejercicio', 'Meta'])
+if 'historial' not in st.session_state:
+    st.session_state.historial = pd.DataFrame(columns=['Fecha', 'Ejercicio', 'Meta'])
 
-if st.button("✅ Registrar entrenamiento de hoy"):
-    nuevo = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), ejer, meta]], 
-                         columns=['Fecha', 'Ejercicio', 'Meta'])
-    st.session_state.datos = pd.concat([st.session_state.datos, nuevo], ignore_index=True)
-    st.toast("¡Progreso guardado!")
+if st.button("✅ Registrar sesión completada"):
+    nuevo_dato = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), nombre_ej, meta]], 
+                              columns=['Fecha', 'Ejercicio', 'Meta'])
+    st.session_state.historial = pd.concat([st.session_state.historial, nuevo_dato], ignore_index=True)
+    st.toast("¡Entrenamiento registrado!")
 
-st.dataframe(st.session_state.datos)
+st.table(st.session_state.historial)
 
-# Descarga local para el móvil
-csv = st.session_state.datos.to_csv(index=False).encode('utf-8')
-st.download_button("📥 Descargar mi historial (CSV)", csv, "mi_progreso.csv", "text/csv")
+# Botón de descarga para el móvil
+csv_data = st.session_state.historial.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label="📥 Descargar historial al móvil (CSV)",
+    data=csv_data,
+    file_name='progreso_habito_acero.csv',
+    mime='text/csv'
+)
+
+st.sidebar.caption("Ingeniería Humana | 2026")
