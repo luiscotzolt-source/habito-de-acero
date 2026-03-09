@@ -1,35 +1,33 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import random
 
-# CONFIGURACIÓN DE INTERFAZ
+# CONFIGURACIÓN PROFESIONAL
 st.set_page_config(page_title="Hábito de Acero: Cloud AI", layout="wide")
 st.title("🛡️ Hábito de Acero: Ingeniería Humana & Cloud AI")
 
-# --- SECCIÓN 1, 2 Y 3: EL CUESTIONARIO INTEGRAL ---
+# --- SECCIONES 1, 2 Y 3: CUESTIONARIO INTEGRAL ---
 with st.sidebar:
     st.header("🔑 Acceso Cloud")
     st.button("🔗 Vincular con Google Account")
     
-    st.header("📋 Sección 1: Perfil")
+    st.header("📋 Sección 1: Perfil Bio")
     alias = st.text_input("Nombre o Alias:", "Usuario_Pro")
     edad = st.number_input("Edad:", 15, 95, 30)
     peso = st.number_input("Peso (kg):", 40, 200, 75)
-    estatura = st.number_input("Estatura (cm):", 120, 220, 170)
 
     st.header("🏥 Sección 2: Salud")
     salud = st.multiselect("Limitantes:", ["Artritis", "Diabetes", "Presión Alta", "Lumbalgia", "Lesión Rodilla"])
     
-    st.header("🎯 Sección 3: Plan")
+    st.header("🎯 Sección 3: Planificación")
     objetivo = st.selectbox("Objetivo:", ["Ganar Masa Muscular", "Perder Peso", "Fuerza y Resistencia"])
     dias = st.slider("Días a la semana:", 1, 7, 3)
     tiempo = st.slider("Minutos por sesión:", 15, 120, 60)
 
-# --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS (BAJADAS DE LÍNEA) ---
+# --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS ---
 st.header(f"🏋️ Rutina Semanal Dinámica para {alias}")
 
-# Diccionario Maestro (Simulación de Nube)
+# Base de datos lógica (Simulación de la Nube)
 db_ejercicios = {
     "Empuje": [
         {"n": "Flexiones Diamante", "s": 4, "r": 12, "d": "60s", "img": "https://images.unsplash.com/photo-1598971639058-fab3c03af452?w=400"},
@@ -49,50 +47,39 @@ db_ejercicios = {
     ]
 }
 
-# Lógica de creación de días distintos
+# Lógica de distribución por días (AQUÍ CAMBIAN LOS EJERCICIOS)
 for d_idx in range(1, dias + 1):
     with st.expander(f"📅 DÍA {d_idx} - Plan Específico", expanded=(d_idx==1)):
-        # Selección de rutina basada en el día para que NO se repitan
         if len(salud) > 0:
             categoria = "Salud"
         elif d_idx % 3 == 1: categoria = "Empuje"
         elif d_idx % 3 == 2: categoria = "Tracción"
         else: categoria = "Pierna"
         
-        rutina_actual = db_ejercicios[categoria]
-        
-        for ej in rutina_actual:
+        for ej in db_ejercicios[categoria]:
             c1, c2 = st.columns([1, 2])
             c1.image(ej["img"], use_container_width=True)
             c2.subheader(ej["n"])
             c2.write(f"**Series:** {ej['s']} | **Reps:** {ej['r']} | **Descanso:** {ej['d']}")
             st.write("---")
 
-# --- SECCIÓN 5: REGISTRO EN TABLA Y ASESORÍA ---
+# --- SECCIÓN 5: REGISTRO Y TABLA (LOG) ---
 st.divider()
 st.header("📊 Registro de Carga Progresiva")
 
 if 'session_log' not in st.session_state:
     st.session_state.session_log = []
 
-if st.button("🚀 Registrar Entrenamiento en la Nube"):
-    entry = {
+if st.button("🚀 Registrar Entrenamiento Completado"):
+    st.session_state.session_log.append({
         "Fecha": datetime.now().strftime("%Y-%m-%d"),
         "Alias": alias,
         "Meta": objetivo,
-        "Día_Prog": f"Día {len(st.session_state.session_log) + 1}",
+        "Sesión": f"Día {len(st.session_state.session_log) + 1}",
         "Estatus": "Completado"
-    }
-    st.session_state.session_log.append(entry)
-    st.balloons()
+    })
+    st.success("¡Datos sincronizados!")
 
-# VISUALIZACIÓN DE TABLA
-if st.session_state.session_log:
-    df = pd.DataFrame(st.session_state.session_log)
-    st.subheader("📋 Tu Historial Activo")
-    st.table(df) # TABLA VISIBLE
-    
-    csv = df.to_csv(index=False).encode('utf-8')
-    st.download_button("📥 Descargar Avance para Asesoría Gemini", csv, f"habito_{alias}.csv", "text/csv")
-
-st.warning("⚠️ Nota: Sube este archivo al chat cada 30 días. Yo (Gemini) analizaré tu prog
+# Visualización de Tabla
+if st.session_state.log_entrenos if 'log_entrenos' in locals() else st.session_state.session_log:
+    df = pd.DataFrame(st.session_
