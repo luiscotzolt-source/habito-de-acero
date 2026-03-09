@@ -1,60 +1,88 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import random
 
-st.set_page_config(page_title="Tu Coach con IA", page_icon="🏋️‍♂️", layout="wide")
+# 1. Configuración de Página
+st.set_page_config(page_title="Hábito de Acero - IA Fitness", page_icon="🛡️")
 
-# --- ESTILOS Y TÍTULO ---
-st.title("🏋️‍♂️ Tu Coach con IA: Ingeniería de Cuerpo Completo")
-st.write("---")
+# 2. Base de Datos de Frases Motivacionales
+frases = [
+    "La disciplina es el puente entre las metas y los logros.",
+    "La pereza es el enemigo, la constancia es tu armadura.",
+    "No te detengas hasta estar orgulloso.",
+    "Ingeniería Humana: Construyendo tu mejor versión."
+]
 
-# --- 1. EVALUACIÓN DE CAPACIDADES Y DOLORES ---
+st.title("🛡️ Hábito de Acero: Asistente IA")
+st.markdown(f"**Mensaje del día:** *{random.choice(frases)}*")
+
+# 3. Formulario de Perfil (Algoritmo de Diagnóstico)
 with st.sidebar:
-    st.header("📊 Perfil del Usuario")
-    objetivo = st.selectbox("Objetivo", ["Masa Muscular", "Fuerza", "Salud y Movilidad"])
-    dias = st.slider("Días por semana", 1, 5, 3)
+    st.header("📋 Perfil de Usuario")
+    genero = st.selectbox("Género", ["Hombre", "Mujer"])
+    edad = st.number_input("Edad", 15, 90, 30)
     
-    st.subheader("⚠️ Limitaciones Articulares")
-    lumbalgia = st.checkbox("Lumbalgia")
-    rodillas = st.checkbox("Dolor en Rodillas")
-    hombros = st.checkbox("Dolor en Hombros")
-    codos = st.checkbox("Dolor en Codos")
+    st.subheader("🏥 Historial de Salud")
+    diabetes = st.checkbox("Diabetes")
+    hipertenso = st.checkbox("Hipertensión")
+    cirugias = st.checkbox("Cirugías Recientes")
+    fracturas = st.checkbox("Fracturas Previas")
+    
+    st.subheader("🎯 Objetivos y Tiempo")
+    meta = st.radio("Meta principal", ["Bajar de peso", "Masa muscular", "Fuerza"])
+    dias = st.slider("Días a la semana", 1, 7, 3)
+    tiempo = st.slider("Minutos por sesión", 15, 120, 45)
 
-# --- 2. MOTOR DE CONSULTORÍA (CONSEJOS DE IA) ---
-st.header("💬 Consulta al Coach IA")
-pregunta = st.text_input("Hazle una pregunta a tu coach (ej: ¿Qué comer antes de entrenar?):")
-if pregunta:
-    if "comer" in pregunta.lower() or "dieta" in pregunta.lower():
-        st.info("💡 **IA responde:** Prioriza carbohidratos complejos 1 hora antes y proteína después. Evita grasas pesadas antes del esfuerzo.")
-    elif "dolor" in pregunta.lower():
-        st.warning("💡 **IA responde:** Si el dolor es punzante, detente. Trabaja en rangos de movimiento donde no haya molestia.")
+# 4. Motor de IA: Generador de Rutinas
+st.header("🏋️ Tu Rutina Personalizada")
+
+def generar_rutina():
+    # Lógica de seguridad
+    if cirugias or fracturas:
+        tipo = "Movilidad y Recuperación"
+        ejercicio = "Estiramientos asistidos y caminata lenta"
+        img = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500"
+    elif hipertenso or diabetes:
+        tipo = "Cardio de Bajo Impacto"
+        ejercicio = "Caminata a ritmo constante o Elíptica"
+        img = "https://images.unsplash.com/photo-1594882645126-14020914d58d?w=500"
+    elif meta == "Masa muscular":
+        tipo = "Hipertrofia Adaptada"
+        ejercicio = "Sentadillas y Flexiones (controladas)"
+        img = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"
     else:
-        st.success("💡 **IA responde:** La clave es la constancia. ¡Sigue adelante con tu plan de hoy!")
-
-# --- 3. GENERACIÓN DE RUTINA COMPLETA ---
-st.header(f"📅 Tu Plan Maestro de Entrenamiento")
-
-if st.button("🔨 Construir Rutina Detallada"):
-    # Definición de bloques por día
-    bloques = ["Calentamiento Dinámico", "Bloque de Fuerza/Hipertrofia", "Core y Estabilidad", "Vuelta a la Calma"]
+        tipo = "Circuito de Fuerza"
+        ejercicio = "Burpees suaves y Planchas"
+        img = "https://images.unsplash.com/photo-1541534741688-6078c64b52d2?w=500"
     
-    for i in range(1, dias + 1):
-        with st.expander(f"🔵 DÍA {i}: Sesión Completa", expanded=True):
-            # Lógica de distribución muscular simple
-            enfoque = "Empuje (Pecho/Tríceps)" if i % 2 != 0 else "Tracción (Espalda/Bíceps)"
-            if i == 3: enfoque = "Pierna y Glúteo"
+    return tipo, ejercicio, img
 
-            st.subheader(f"Enfoque: {enfoque}")
-            
-            # --- TABLA DE EJERCICIOS DETALLADA ---
-            col_tabla, col_imgs = st.columns([2, 1])
-            
-            with col_tabla:
-                # Filtrado de ejercicios por limitaciones
-                ejercicios_data = []
-                
-                # Ejemplo de ejercicios adaptativos
-                if "Pecho" in enfoque:
-                    ej = "Flexiones (Pushups)" if not hombros else "Press de banca con agarre cerrado (protege hombro)"
-                    ejercicios_data.append([ej, "4 series", "12 reps", "60 seg"])
-                    ejercicios_data.append(["Aperturas con mancuernas", "3 series", "15 reps", "
+tipo, ejer, imagen = generar_rutina()
+
+col1, col2 = st.columns(2)
+with col1:
+    st.success(f"**Tipo:** {tipo}")
+    st.write(f"**Ejercicio Principal:** {ejer}")
+    st.write(f"**Duración:** {tiempo} minutos")
+with col2:
+    st.image(imagen, caption="Ejemplo técnico del ejercicio")
+
+# 5. Registro Automático y Descarga CSV
+st.divider()
+st.subheader("📈 Registro de Avance")
+
+if 'datos' not in st.session_state:
+    st.session_state.datos = pd.DataFrame(columns=['Fecha', 'Ejercicio', 'Meta'])
+
+if st.button("✅ Registrar entrenamiento de hoy"):
+    nuevo = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), ejer, meta]], 
+                         columns=['Fecha', 'Ejercicio', 'Meta'])
+    st.session_state.datos = pd.concat([st.session_state.datos, nuevo], ignore_index=True)
+    st.toast("¡Progreso guardado!")
+
+st.dataframe(st.session_state.datos)
+
+# Descarga local para el móvil
+csv = st.session_state.datos.to_csv(index=False).encode('utf-8')
+st.download_button("📥 Descargar mi historial (CSV)", csv, "mi_progreso.csv", "text/csv")
