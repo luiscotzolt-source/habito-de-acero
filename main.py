@@ -2,96 +2,59 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Configuración profesional
 st.set_page_config(page_title="Tu Coach con IA", page_icon="🏋️‍♂️", layout="wide")
 
-st.title("🏋️‍♂️ Tu Coach con IA: Ingeniería de Entrenamiento")
-st.markdown("### *Rutinas inteligentes adaptadas a tus lesiones y disponibilidad*")
+# --- ESTILOS Y TÍTULO ---
+st.title("🏋️‍♂️ Tu Coach con IA: Ingeniería de Cuerpo Completo")
 st.write("---")
 
-# --- 1. EVALUACIÓN DE LIMITACIONES ESPECÍFICAS ---
-with st.form("cuestionario_coach"):
-    st.header("📋 Diagnóstico de Capacidades")
+# --- 1. EVALUACIÓN DE CAPACIDADES Y DOLORES ---
+with st.sidebar:
+    st.header("📊 Perfil del Usuario")
+    objetivo = st.selectbox("Objetivo", ["Masa Muscular", "Fuerza", "Salud y Movilidad"])
+    dias = st.slider("Días por semana", 1, 5, 3)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        objetivo = st.selectbox("Objetivo", ["Salud General", "Masa Muscular", "Fuerza", "Pérdida de Grasa"])
-        dias = st.slider("Días disponibles a la semana", 1, 6, 3)
-    with col2:
-        tiempo = st.slider("Minutos por sesión", 20, 90, 45)
-        edad = st.number_input("Edad", 15, 90, 30)
+    st.subheader("⚠️ Limitaciones Articulares")
+    lumbalgia = st.checkbox("Lumbalgia")
+    rodillas = st.checkbox("Dolor en Rodillas")
+    hombros = st.checkbox("Dolor en Hombros")
+    codos = st.checkbox("Dolor en Codos")
 
-    st.subheader("⚠️ Zonas de Dolor o Limitaciones")
-    st.write("Selecciona las zonas donde presentas molestias para adaptar los ejercicios:")
-    c1, c2, c3, c4 = st.columns(4)
-    lumbalgia = c1.checkbox("Lumbalgia (Espalda baja)")
-    rodillas = c2.checkbox("Dolor en Rodillas")
-    hombros = c3.checkbox("Dolor en Hombros")
-    codos = c4.checkbox("Dolor en Codos")
+# --- 2. MOTOR DE CONSULTORÍA (CONSEJOS DE IA) ---
+st.header("💬 Consulta al Coach IA")
+pregunta = st.text_input("Hazle una pregunta a tu coach (ej: ¿Qué comer antes de entrenar?):")
+if pregunta:
+    if "comer" in pregunta.lower() or "dieta" in pregunta.lower():
+        st.info("💡 **IA responde:** Prioriza carbohidratos complejos 1 hora antes y proteína después. Evita grasas pesadas antes del esfuerzo.")
+    elif "dolor" in pregunta.lower():
+        st.warning("💡 **IA responde:** Si el dolor es punzante, detente. Trabaja en rangos de movimiento donde no haya molestia.")
+    else:
+        st.success("💡 **IA responde:** La clave es la constancia. ¡Sigue adelante con tu plan de hoy!")
 
-    enviar = st.form_submit_button("🔨 Generar Mi Rutina Semanal")
+# --- 3. GENERACIÓN DE RUTINA COMPLETA ---
+st.header(f"📅 Tu Plan Maestro de Entrenamiento")
 
-# --- 2. ALGORITMO DE DISTRIBUCIÓN Y ADAPTACIÓN ---
-if enviar:
-    st.header(f"📅 Plan Semanal: {dias} Días de Entrenamiento")
+if st.button("🔨 Construir Rutina Detallada"):
+    # Definición de bloques por día
+    bloques = ["Calentamiento Dinámico", "Bloque de Fuerza/Hipertrofia", "Core y Estabilidad", "Vuelta a la Calma"]
     
-    # Definición de rutinas por día según cantidad de días
-    if dias == 1:
-        rutinas = {1: "Cuerpo Completo (Full Body)"}
-    elif dias == 2:
-        rutinas = {1: "Tren Superior", 2: "Tren Inferior"}
-    elif dias == 3:
-        rutinas = {1: "Pecho, Tríceps y Hombros", 2: "Espalda y Bíceps", 3: "Piernas y Core"}
-    else: # 4 a 6 días
-        rutinas = {1: "Pecho y Tríceps", 2: "Espalda y Bíceps", 3: "Piernas", 4: "Hombros y Core"}
+    for i in range(1, dias + 1):
+        with st.expander(f"🔵 DÍA {i}: Sesión Completa", expanded=True):
+            # Lógica de distribución muscular simple
+            enfoque = "Empuje (Pecho/Tríceps)" if i % 2 != 0 else "Tracción (Espalda/Bíceps)"
+            if i == 3: enfoque = "Pierna y Glúteo"
 
-    # Generar visualización por cada día
-    for d, musculos in rutinas.items():
-        with st.expander(f"DÍA {d}: {musculos}", expanded=True):
-            col_txt, col_img = st.columns([2, 1])
+            st.subheader(f"Enfoque: {enfoque}")
             
-            with col_txt:
-                st.write(f"**Enfoque:** {musculos}")
+            # --- TABLA DE EJERCICIOS DETALLADA ---
+            col_tabla, col_imgs = st.columns([2, 1])
+            
+            with col_tabla:
+                # Filtrado de ejercicios por limitaciones
+                ejercicios_data = []
                 
-                # Adaptación de ejercicios según limitaciones
-                ejercicios = []
-                if "Pecho" in musculos:
-                    ej = "Press con mancuernas" if not hombros else "Flexiones inclinadas (menor presión en hombro)"
-                    ejercicios.append(f"✅ {ej}")
-                if "Tríceps" in musculos:
-                    ej = "Extensiones en polea" if not codos else "Press francés ligero (evitar bloqueo brusco)"
-                    ejercicios.append(f"✅ {ej}")
-                if "Piernas" in musculos:
-                    ej = "Sentadilla búlgara" if not rodillas else "Puente de glúteo e Isometría (sin impacto)"
-                    ejercicios.append(f"✅ {ej}")
-                if "Espalda" in musculos:
-                    ej = "Peso muerto o Remo" if not lumbalgia else "Remo en máquina con apoyo en pecho (protege espalda)"
-                    ejercicios.append(f"✅ {ej}")
-                
-                for e in ejercicios:
-                    st.write(e)
-                
-                # Notas de seguridad IA
-                if lumbalgia: st.warning("⚠️ IA detectó Lumbalgia: Se han eliminado ejercicios de carga axial (pesas sobre la columna).")
-                if rodillas: st.info("ℹ️ IA detectó dolor en Rodillas: Ejercicios de pierna ajustados a rangos cortos.")
-
-            with col_img:
-                # Imagen genérica según el grupo principal
-                img = "https://images.unsplash.com/photo-1581009146145-b5ef03a74010?w=400" if "Pecho" in musculos else "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"
-                st.image(img, caption=f"Entrenamiento de {musculos}")
-
-    # --- 3. REGISTRO Y DESCARGA ---
-    st.divider()
-    if 'historial' not in st.session_state:
-        st.session_state.historial = pd.DataFrame(columns=['Fecha', 'Sesión', 'Limitaciones'])
-    
-    if st.button("✅ Registrar Día Completado"):
-        nuevo = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), "Sesión cumplida", "Adaptada"]], columns=['Fecha', 'Sesión', 'Limitaciones'])
-        st.session_state.historial = pd.concat([st.session_state.historial, nuevo], ignore_index=True)
-        st.success("¡Ingeniería humana aplicada! Progreso guardado.")
-        st.balloons()
-
-    csv = st.session_state.historial.to_csv(index=False).encode('utf-8')
-    st.download_button("📥 Descargar mi avance al móvil", csv, "mi_entrenamiento.csv", "text/csv")
-
-st.sidebar.write("Tu Coach con IA | v2.0")
+                # Ejemplo de ejercicios adaptativos
+                if "Pecho" in enfoque:
+                    ej = "Flexiones (Pushups)" if not hombros else "Press de banca con agarre cerrado (protege hombro)"
+                    ejercicios_data.append([ej, "4 series", "12 reps", "60 seg"])
+                    ejercicios_data.append(["Aperturas con mancuernas", "3 series", "15 reps", "
