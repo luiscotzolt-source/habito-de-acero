@@ -1,66 +1,39 @@
 import streamlit as st
-import time
+import pandas as pd
+from datetime import datetime
 
-# Configuración de la página
-st.set_page_config(page_title="Hábito de Acero", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="Hábito de Acero - Rutinas", page_icon="🏋️‍♂️")
 
-# Estilo personalizado
-st.markdown("""
-    <style>
-    .main {
-        background-color: #0e1117;
-    }
-    .stButton>button {
-        width: 100%;
-        border-radius: 5px;
-        height: 3em;
-        background-color: #ff4b4b;
-        color: white;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+st.title("🏋️‍♂️ Hábito de Acero: Entrenamiento")
+st.subheader("Registro de Ingeniería Física")
 
-# Encabezado
-st.title("🛡️ Hábito de Acero")
-st.subheader("Forjando la mejor versión de ti mismo")
+# 1. Selector de Rutina
+dia = st.selectbox("Selecciona el día de hoy:", ["Lunes: Empuje", "Martes: Tracción", "Miércoles: Pierna", "Jueves: Cardio/Core", "Viernes: Full Body"])
+
+# 2. Entrada de Datos de Ejercicio
 st.write("---")
-
-# Sistema de Registro
-st.sidebar.header("Panel de Control")
-nombre = st.sidebar.text_input("Ingeniero:", value="Luis")
-
-# Rutina Diaria
-st.info(f"Bienvenido, {nombre}. La disciplina es el puente entre las metas y los logros.")
-
-col1, col2 = st.columns(2)
-
+col1, col2, col3 = st.columns(3)
 with col1:
-    st.markdown("### 🛠️ Base Física")
-    h1 = st.checkbox("Ejercicio intenso (30 min)")
-    h2 = st.checkbox("Ducha fría")
-    h3 = st.checkbox("Alimentación limpia")
-
+    ejercicio = st.text_input("Ejercicio", placeholder="Ej: Press Banca")
 with col2:
-    st.markdown("### 🧠 Base Mental")
-    h4 = st.checkbox("Lectura (10 páginas)")
-    h5 = st.checkbox("Meditación / Enfoque")
-    h6 = st.checkbox("Planificación del día")
+    peso = st.number_input("Peso (kg)", min_value=0.0, step=0.5)
+with col3:
+    reps = st.number_input("Repeticiones", min_value=0, step=1)
 
-# Cálculo de progreso
-total = sum([h1, h2, h3, h4, h5, h6])
-progreso = total / 6
+if st.button("Registrar Serie"):
+    st.success(f"Serie de {ejercicio} registrada: {peso}kg x {reps} reps")
+    # Aquí podrías conectar una base de datos más adelante
 
+# 3. Visualización de Avance (Ejemplo de tabla)
 st.write("---")
-st.write(f"### Progreso del Día: {int(progreso * 100)}%")
-st.progress(progreso)
+st.subheader("📈 Tu Progreso Reciente")
+# Datos de ejemplo para que veas cómo se vería el avance
+data = {
+    'Fecha': [datetime.now().strftime("%Y-%m-%d")],
+    'Ejercicio': [ejercicio if ejercicio else "Esperando datos..."],
+    'Carga Total (kg)': [peso * reps]
+}
+df = pd.DataFrame(data)
+st.table(df)
 
-if progreso == 1.0:
-    st.balloons()
-    st.success("¡MISIÓN CUMPLIDA! Eres un hombre de acero.")
-elif progreso >= 0.5:
-    st.warning("Buen avance, pero el acero se forja hasta el final.")
-else:
-    st.error("Mantente firme. La pereza es el enemigo.")
-
-# Pie de página
-st.caption("Sistema de Ingeniería Humana | 2026")
+st.sidebar.write("Sistema de Ingeniería Humana 2026")
