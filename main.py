@@ -36,24 +36,40 @@ with st.expander("⚙️ Configura tu Perfil de Salud", expanded=True):
 
     objetivo = st.selectbox("Objetivo", ["Bajar de peso", "Masa muscular", "Fuerza"])
 
-# --- LÓGICA DE IA (GENERACIÓN DE RUTINA) ---
+# --- LÓGICA DE IA (GENERACIÓN DE RUTINA SEMANAL) ---
 st.write("---")
-if st.button("🚀 Generar Mi Rutina Personalizada"):
-    st.subheader("📋 Tu Plan de Entrenamiento IA")
+if st.button("🚀 Generar Mi Plan Semanal Personalizado"):
+    st.subheader(f"📅 Plan de {dias} días para {objetivo}")
     
-    # Ejemplo de lógica adaptativa
-    if diabetes or hipertenso:
-        st.warning("⚠️ Nota: Tu rutina se ha ajustado para intensidad moderada debido a tu perfil de salud.")
-        ejer_nombre = "Caminata a ritmo constante o Elíptica"
-        st.image("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400", caption=f"Ejemplo: {ejer_nombre}")
-    elif objetivo == "Masa muscular":
-        ejer_nombre = "Sentadillas con peso o Flexiones de brazo"
-        st.image("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400", caption=f"Ejemplo: {ejer_nombre}")
+    # 1. Definir la Estructura según días
+    if dias <= 2:
+        tipo_split = "Full Body (Cuerpo Completo)"
+        ejercicios = ["Sentadilla", "Push ups", "Remo con mochila", "Plancha"]
+    elif dias <= 4:
+        tipo_split = "Torso / Pierna"
+        ejercicios = ["Press Militar", "Peso Muerto", "Dominadas", "Zancadas"]
     else:
-        ejer_nombre = "Burpees o Saltos de cuerda"
-        st.image("https://images.unsplash.com/photo-1541534741688-6078c64b52d2?w=400", caption=f"Ejemplo: {ejer_nombre}")
+        tipo_split = "Push / Pull / Leg (Avanzado)"
+        ejercicios = ["Banca", "Remo c/mancuerna", "Sentadilla Búlgara", "Fondos"]
 
-    st.write(f"**Rutina Sugerida:** Realiza 4 series de 12 repeticiones de {ejer_nombre}.")
+    # 2. Ajustar por Salud
+    if diabetes or hipertenso:
+        ejercicios = [e + " (Ritmo moderado)" for e in ejercicios]
+        st.warning("⚠️ Intensidad controlada por salud cardiovascular.")
+
+    # 3. Mostrar Rutina Semanal
+    st.info(f"Estructura recomendada: **{tipo_split}**")
+    
+    # Creamos columnas para los ejercicios con sus ejemplos
+    cols = st.columns(len(ejercicios))
+    for i, ejer in enumerate(ejercicios):
+        with cols[i]:
+            st.write(f"**{ejer}**")
+            # Enlaces de ejemplo (puedes cambiarlos por GIFs técnicos)
+            st.image(f"https://picsum.photos/200/200?random={i}", caption="Técnica sugerida")
+            st.write("3 series x 12 reps")
+
+    st.success(f"Ingeniero, tu plan está diseñado para completarse en sesiones de {tiempo} minutos.")
 
 # --- GUARDADO AUTOMÁTICO Y DESCARGA ---
 st.write("---")
