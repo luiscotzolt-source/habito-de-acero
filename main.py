@@ -1,117 +1,97 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import random
 
 # Configuración profesional
 st.set_page_config(page_title="Tu Coach con IA", page_icon="🏋️‍♂️", layout="wide")
 
-st.title("🏋️‍♂️ Tu Coach con IA: Entrenamiento Adaptado")
-st.markdown("### *Diseño de rutinas basado en tus limitaciones y objetivos*")
+st.title("🏋️‍♂️ Tu Coach con IA: Ingeniería de Entrenamiento")
+st.markdown("### *Rutinas inteligentes adaptadas a tus lesiones y disponibilidad*")
 st.write("---")
 
-# --- 1. CUESTIONARIO DE LIMITACIONES Y CAPACIDADES ---
-st.header("📋 Evaluación de Perfil y Salud")
-st.info("Para crear una rutina que te funcione, primero debemos identificar tus límites físicos.")
-
+# --- 1. EVALUACIÓN DE LIMITACIONES ESPECÍFICAS ---
 with st.form("cuestionario_coach"):
+    st.header("📋 Diagnóstico de Capacidades")
+    
     col1, col2 = st.columns(2)
-    
     with col1:
-        genero = st.radio("Género", ["Hombre", "Mujer"])
-        edad = st.number_input("Edad", 15, 100, 30)
-        objetivo = st.selectbox("¿Qué buscas lograr?", 
-                                ["Bajar de peso", "Ganar masa muscular", "Fuerza funcional", "Rehabilitación"])
-    
+        objetivo = st.selectbox("Objetivo", ["Salud General", "Masa Muscular", "Fuerza", "Pérdida de Grasa"])
+        dias = st.slider("Días disponibles a la semana", 1, 6, 3)
     with col2:
-        dias = st.slider("Días disponibles por semana", 1, 7, 3)
-        tiempo = st.slider("Minutos disponibles por sesión", 15, 120, 45)
+        tiempo = st.slider("Minutos por sesión", 20, 90, 45)
+        edad = st.number_input("Edad", 15, 90, 30)
 
-    st.subheader("⚠️ Limitaciones y Condiciones Crónicas")
-    st.write("Selecciona cualquier condición que debamos considerar:")
+    st.subheader("⚠️ Zonas de Dolor o Limitaciones")
+    st.write("Selecciona las zonas donde presentas molestias para adaptar los ejercicios:")
     c1, c2, c3, c4 = st.columns(4)
-    diabetes = c1.checkbox("Diabetes")
-    hipertenso = c2.checkbox("Hipertensión")
-    cirugias = c3.checkbox("Cirugías Recientes")
-    fracturas = c4.checkbox("Fracturas/Lesiones Óseas")
+    lumbalgia = c1.checkbox("Lumbalgia (Espalda baja)")
+    rodillas = c2.checkbox("Dolor en Rodillas")
+    hombros = c3.checkbox("Dolor en Hombros")
+    codos = c4.checkbox("Dolor en Codos")
 
-    enviar = st.form_submit_button("🔨 Construir mi Rutina a Medida")
+    enviar = st.form_submit_button("🔨 Generar Mi Rutina Semanal")
 
-# --- 2. ALGORITMO DE SELECCIÓN INTELIGENTE ---
+# --- 2. ALGORITMO DE DISTRIBUCIÓN Y ADAPTACIÓN ---
 if enviar:
-    st.write("---")
-    st.header("🎯 Tu Plan Maestro Personalizado")
-
-    # Lógica de prioridad: Seguridad ante todo
-    if cirugias or fracturas or objetivo == "Rehabilitación":
-        categoria = "REHABILITACIÓN Y REESTRUCTURACIÓN"
-        ejercicios = [
-            "Movilidad articular de bajo impacto (10 min)",
-            "Isométricos (mantener tensión sin mover la articulación)",
-            "Estiramientos estáticos asistidos"
-        ]
-        consejo = "El objetivo es recuperar rango de movimiento. No debe existir dolor agudo."
-        img_url = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500"
+    st.header(f"📅 Plan Semanal: {dias} Días de Entrenamiento")
     
-    elif hipertenso or diabetes:
-        categoria = "CONTROL METABÓLICO Y CARDIOVASCULAR"
-        ejercicios = [
-            "Caminata a paso ligero o Elíptica (Nivel 3-4)",
-            "Ejercicios de fuerza con autocarga (sentarse y pararse de silla)",
-            "Movilidad de tren superior sentado"
-        ]
-        consejo = "Evite esfuerzos explosivos. Mantenga una hidratación constante."
-        img_url = "https://images.unsplash.com/photo-1594882645126-14020914d58d?w=500"
+    # Definición de rutinas por día según cantidad de días
+    if dias == 1:
+        rutinas = {1: "Cuerpo Completo (Full Body)"}
+    elif dias == 2:
+        rutinas = {1: "Tren Superior", 2: "Tren Inferior"}
+    elif dias == 3:
+        rutinas = {1: "Pecho, Tríceps y Hombros", 2: "Espalda y Bíceps", 3: "Piernas y Core"}
+    else: # 4 a 6 días
+        rutinas = {1: "Pecho y Tríceps", 2: "Espalda y Bíceps", 3: "Piernas", 4: "Hombros y Core"}
 
-    elif objetivo == "Ganar masa muscular":
-        categoria = "HIPERTROFIA Y POTENCIA"
-        ejercicios = [
-            "Sentadillas profundas (4 series x 10-12 reps)",
-            "Flexiones de pecho (Push-ups) al fallo técnico",
-            "Remo invertido o con bandas elásticas"
-        ]
-        consejo = "Enfócate en la fase negativa (bajar lento) para romper más fibras musculares."
-        img_url = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"
+    # Generar visualización por cada día
+    for d, musculos in rutinas.items():
+        with st.expander(f"DÍA {d}: {musculos}", expanded=True):
+            col_txt, col_img = st.columns([2, 1])
+            
+            with col_txt:
+                st.write(f"**Enfoque:** {musculos}")
+                
+                # Adaptación de ejercicios según limitaciones
+                ejercicios = []
+                if "Pecho" in musculos:
+                    ej = "Press con mancuernas" if not hombros else "Flexiones inclinadas (menor presión en hombro)"
+                    ejercicios.append(f"✅ {ej}")
+                if "Tríceps" in musculos:
+                    ej = "Extensiones en polea" if not codos else "Press francés ligero (evitar bloqueo brusco)"
+                    ejercicios.append(f"✅ {ej}")
+                if "Piernas" in musculos:
+                    ej = "Sentadilla búlgara" if not rodillas else "Puente de glúteo e Isometría (sin impacto)"
+                    ejercicios.append(f"✅ {ej}")
+                if "Espalda" in musculos:
+                    ej = "Peso muerto o Remo" if not lumbalgia else "Remo en máquina con apoyo en pecho (protege espalda)"
+                    ejercicios.append(f"✅ {ej}")
+                
+                for e in ejercicios:
+                    st.write(e)
+                
+                # Notas de seguridad IA
+                if lumbalgia: st.warning("⚠️ IA detectó Lumbalgia: Se han eliminado ejercicios de carga axial (pesas sobre la columna).")
+                if rodillas: st.info("ℹ️ IA detectó dolor en Rodillas: Ejercicios de pierna ajustados a rangos cortos.")
 
-    else: # Bajar de peso / Fuerza funcional
-        categoria = "RESISTENCIA Y PÉRDIDA DE GRASA"
-        ejercicios = [
-            "Circuito: 30 seg Burpees / 30 seg Plancha / 30 seg Descanso",
-            "Zancadas alternas (Lunges)",
-            "Escaladores (Mountain Climbers)"
-        ]
-        consejo = "Mantén la frecuencia cardíaca elevada con descansos cortos."
-        img_url = "https://images.unsplash.com/photo-1541534741688-6078c64b52d2?w=500"
+            with col_img:
+                # Imagen genérica según el grupo principal
+                img = "https://images.unsplash.com/photo-1581009146145-b5ef03a74010?w=400" if "Pecho" in musculos else "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"
+                st.image(img, caption=f"Entrenamiento de {musculos}")
 
-    # Presentación de la Rutina
-    col_img, col_txt = st.columns([1, 1.2])
-    with col_img:
-        st.image(img_url, caption=f"Guía para: {categoria}")
-    with col_txt:
-        st.success(f"**Sistema Asignado:** {categoria}")
-        st.write("**Tus ejercicios específicos:**")
-        for ej in ejercicios:
-            st.write(f"- {ej}")
-        st.info(f"**💡 Consejo de tu Coach:** {consejo}")
-
-    # --- 3. PERSISTENCIA DE DATOS ---
+    # --- 3. REGISTRO Y DESCARGA ---
     st.divider()
-    st.subheader("📊 Tu Bitácora de Entrenamiento")
-    
     if 'historial' not in st.session_state:
-        st.session_state.historial = pd.DataFrame(columns=['Fecha', 'Rutina', 'Estado'])
-
-    if st.button("✅ Marcar entrenamiento como completado"):
-        nueva_entrada = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), categoria, "LOGRADO"]], 
-                                     columns=['Fecha', 'Rutina', 'Estado'])
-        st.session_state.historial = pd.concat([st.session_state.historial, nueva_entrada], ignore_index=True)
+        st.session_state.historial = pd.DataFrame(columns=['Fecha', 'Sesión', 'Limitaciones'])
+    
+    if st.button("✅ Registrar Día Completado"):
+        nuevo = pd.DataFrame([[datetime.now().strftime("%Y-%m-%d"), "Sesión cumplida", "Adaptada"]], columns=['Fecha', 'Sesión', 'Limitaciones'])
+        st.session_state.historial = pd.concat([st.session_state.historial, nuevo], ignore_index=True)
+        st.success("¡Ingeniería humana aplicada! Progreso guardado.")
         st.balloons()
-        st.toast("¡Progreso registrado en tu historial local!")
 
-    st.table(st.session_state.historial)
-
-    # Botón de descarga para el móvil
     csv = st.session_state.historial.to_csv(index=False).encode('utf-8')
-    st.download_button("📥 Descargar reporte a mi móvil", csv, "mi_progreso_coach.csv", "text/csv")
+    st.download_button("📥 Descargar mi avance al móvil", csv, "mi_entrenamiento.csv", "text/csv")
 
-st.sidebar.write("Tu Coach con IA | 2026")
+st.sidebar.write("Tu Coach con IA | v2.0")
