@@ -1,150 +1,98 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
+from datetime import datetime
+import random
 
-# --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="Hábito de Acero", page_icon="??", layout="wide")
+# CONFIGURACIÓN DE INTERFAZ
+st.set_page_config(page_title="Hábito de Acero: Cloud AI", layout="wide")
+st.title("🛡️ Hábito de Acero: Ingeniería Humana & Cloud AI")
 
-# --- LÓGICA DE ESTILOS (CSS Simple) ---
-st.markdown("""
-    <style>
-    .main { background-color: #f5f7f9; }
-    .stButton>button { width: 100%; background-color: #2e7d32; color: white; }
-    .reportview-container .main .block-container { padding-top: 2rem; }
-    </style>
-    """, unsafe_allow_name_with_html=True)
-
-# --- BARRA LATERAL (Navegación y Donaciones) ---
-st.sidebar.title("??? Hábito de Acero")
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/2964/2964514.png", width=100)
-menu = st.sidebar.radio("Navegación", [
-    "1. Perfil de Salud", 
-    "2. Mi Entrenamiento", 
-    "3. Nutrición de Bolsillo", 
-    "4. Verdad sobre Suplementos", 
-    "5. Mentalidad y Fármacos",
-    "6. Exportar Progreso"
-])
-
-st.sidebar.markdown("---")
-st.sidebar.info("?? *El yo de mañana te agradecerá el esfuerzo de hoy.*")
-st.sidebar.write("?? *Donaciones (Sin Publicidad):*")
-st.sidebar.button("Donar por PayPal")
-
-# --- 1. PERFIL DE SALUD Y SEGURIDAD ---
-if menu == "1. Perfil de Salud":
-    st.header("?? Evaluación Inicial de Ingeniería Humana")
-    col1, col2 = st.columns(2)
+# --- SECCIÓN 1, 2 Y 3: EL CUESTIONARIO INTEGRAL ---
+with st.sidebar:
+    st.header("🔑 Acceso Cloud")
+    st.button("🔗 Vincular con Google Account")
     
-    with col1:
-        edad = st.number_input("Edad", 14, 90, 40)
-        peso = st.number_input("Peso actual (kg)", 40.0, 200.0, 80.0)
-        genero = st.selectbox("Género", ["Masculino", "Femenino"])
-    
-    with col2:
-        estat = st.number_input("Estatura (cm)", 100, 250, 170)
-        objetivo = st.selectbox("Tu meta principal", ["Perder Tallas", "Ganar Músculo", "Rehabilitación"])
+    st.header("📋 Sección 1: Perfil")
+    alias = st.text_input("Nombre o Alias:", "Usuario_Pro")
+    edad = st.number_input("Edad:", 15, 95, 30)
+    peso = st.number_input("Peso (kg):", 40, 200, 75)
+    estatura = st.number_input("Estatura (cm):", 120, 220, 170)
 
-    st.subheader("?? Historial Médico y Padecimientos")
-    lesiones = st.multiselect("Selecciona si tienes o has tenido:", [
-        "Hernia Discal", "Hernia Inguinal", "Ciática", "Lumbalgia", 
-        "Dolor de Rodilla", "Hipertensión", "Diabetes", "Cesárea", "Apendicitis"
-    ])
+    st.header("🏥 Sección 2: Salud")
+    salud = st.multiselect("Limitantes:", ["Artritis", "Diabetes", "Presión Alta", "Lumbalgia", "Lesión Rodilla"])
     
-    # Guardar en sesión para usar en otros módulos
-    st.session_state['user_data'] = {
-        "edad": edad, "peso": peso, "lesiones": lesiones, "objetivo": objetivo
+    st.header("🎯 Sección 3: Plan")
+    objetivo = st.selectbox("Objetivo:", ["Ganar Masa Muscular", "Perder Peso", "Fuerza y Resistencia"])
+    dias = st.slider("Días a la semana:", 1, 7, 3)
+    tiempo = st.slider("Minutos por sesión:", 15, 120, 60)
+
+# --- SECCIÓN 4: MOTOR DE RUTINAS DINÁMICAS (BAJADAS DE LÍNEA) ---
+st.header(f"🏋️ Rutina Semanal Dinámica para {alias}")
+
+# Diccionario Maestro (Simulación de Nube)
+db_ejercicios = {
+    "Empuje": [
+        {"n": "Flexiones Diamante", "s": 4, "r": 12, "d": "60s", "img": "https://images.unsplash.com/photo-1598971639058-fab3c03af452?w=400"},
+        {"n": "Press Militar con Banda", "s": 3, "r": 10, "d": "90s", "img": "https://images.unsplash.com/photo-1532029837206-aba2b762a638?w=400"}
+    ],
+    "Tracción": [
+        {"n": "Remo con Mancuerna", "s": 4, "r": 15, "d": "60s", "img": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400"},
+        {"n": "Dominadas o Jalones", "s": 3, "r": 10, "d": "90s", "img": "https://images.unsplash.com/photo-1581009146145-b5ef03a74e7f?w=400"}
+    ],
+    "Pierna": [
+        {"n": "Sentadilla Búlgara", "s": 3, "r": 12, "d": "90s", "img": "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400"},
+        {"n": "Peso Muerto Rumano", "s": 4, "r": 12, "d": "60s", "img": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"}
+    ],
+    "Salud": [
+        {"n": "Puente Glúteo", "s": 3, "r": 15, "d": "45s", "img": "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400"},
+        {"n": "Movilidad de Cadera", "s": 3, "r": "1 min", "d": "30s", "img": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400"}
+    ]
+}
+
+# Lógica de creación de días distintos
+for d_idx in range(1, dias + 1):
+    with st.expander(f"📅 DÍA {d_idx} - Plan Específico", expanded=(d_idx==1)):
+        # Selección de rutina basada en el día para que NO se repitan
+        if len(salud) > 0:
+            categoria = "Salud"
+        elif d_idx % 3 == 1: categoria = "Empuje"
+        elif d_idx % 3 == 2: categoria = "Tracción"
+        else: categoria = "Pierna"
+        
+        rutina_actual = db_ejercicios[categoria]
+        
+        for ej in rutina_actual:
+            c1, c2 = st.columns([1, 2])
+            c1.image(ej["img"], use_container_width=True)
+            c2.subheader(ej["n"])
+            c2.write(f"**Series:** {ej['s']} | **Reps:** {ej['r']} | **Descanso:** {ej['d']}")
+            st.write("---")
+
+# --- SECCIÓN 5: REGISTRO EN TABLA Y ASESORÍA ---
+st.divider()
+st.header("📊 Registro de Carga Progresiva")
+
+if 'session_log' not in st.session_state:
+    st.session_state.session_log = []
+
+if st.button("🚀 Registrar Entrenamiento en la Nube"):
+    entry = {
+        "Fecha": datetime.now().strftime("%Y-%m-%d"),
+        "Alias": alias,
+        "Meta": objetivo,
+        "Día_Prog": f"Día {len(st.session_state.session_log) + 1}",
+        "Estatus": "Completado"
     }
-    st.success("? Perfil configurado. La IA ahora conoce tus límites y fortalezas.")
+    st.session_state.session_log.append(entry)
+    st.balloons()
 
-# --- 2. ENTRENAMIENTO ADAPTATIVO (MODO LITE) ---
-elif menu == "2. Mi Entrenamiento":
-    st.header("??? Entrenamiento Personalizado")
+# VISUALIZACIÓN DE TABLA
+if st.session_state.session_log:
+    df = pd.DataFrame(st.session_state.session_log)
+    st.subheader("📋 Tu Historial Activo")
+    st.table(df) # TABLA VISIBLE
     
-    if 'user_data' not in st.session_state:
-        st.warning("?? Por favor, completa tu Perfil de Salud primero.")
-    else:
-        estado = st.select_slider("¿Cómo te sientes tras la jornada laboral?", 
-            options=["Agotado", "Cansado", "Normal", "Con Energía"])
-        
-        # Filtros de Seguridad basados en el perfil
-        user = st.session_state['user_data']
-        
-        if any(x in user['lesiones'] for x in ["Hernia Discal", "Ciática", "Lumbalgia"]):
-            st.error("?? *ALERTA DE ESPALDA:* Evita Sentadilla con barra y Press Militar de pie. Usa máquinas con respaldo.")
-            
-        
-        if "Hipertensión" in user['lesiones']:
-            st.warning("?? *ALERTA PRESIÓN:* Exhala en el esfuerzo. No mantengas el aire (Valsalva).")
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Descargar Avance para Asesoría Gemini", csv, f"habito_{alias}.csv", "text/csv")
 
-        # Generación de Rutina
-        if estado in ["Agotado", "Cansado"]:
-            st.info("??? *MODO LITE (Hábito de Acero):* Hoy el éxito es aparecer. Haremos 2 series por ejercicio al 60% de intensidad.")
-            st.write("- *Pecho:* Prensa en máquina (Más seguro que pesas libres hoy).")
-            st.write("- *Espalda:* Remo sentado (Enfoque en postura).")
-            st.write("- *Pierna:* Prensa de piernas (Rango corto si hay dolor).")
-        else:
-            st.success("?? *MODO FULL:* Vamos por la sobrecarga progresiva.")
-            st.write("- *Básico:* 4 series de 8-12 repeticiones.")
-            st.write("- *Enfoque:* Anota si pudiste subir 1kg o hacer 1 rep más que ayer.")
-
-# --- 3. NUTRICIÓN DE BOLSILLO (ING. ALIMENTARIA) ---
-elif menu == "3. Nutrición de Bolsillo":
-    st.header("?? Dieta Real para Gente Real")
-    
-    if 'user_data' in st.session_state:
-        u = st.session_state['user_data']
-        # Lógica de Macros (Mifflin-St Jeor simplificada)
-        proteina = u['peso'] * 2
-        st.metric("Proteína diaria sugerida", f"{proteina} g", "Basado en tu peso")
-        
-        st.subheader("?? Supermercado Económico")
-        st.markdown("""
-        * *Huevo:* Proteína de oro. Barata y completa.
-        * *Arroz y Frijoles:* Combinación de aminoácidos perfecta (Ingeniería de Alimentos).
-        * *Papa/Camote:* Energía de la tierra, mucho mejor que procesados.
-        * *Agua con Sal:* Mejor que cualquier bebida deportiva cara si sudas mucho.
-        """)
-        
-
-# --- 4. VERDAD SOBRE SUPLEMENTOS ---
-elif menu == "4. Verdad sobre Suplementos":
-    st.header("?? El Filtro de la Ciencia")
-    st.write("No tires tu dinero en marketing.")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("? Lo que SÍ sirve")
-        st.write("- *Creatina Monohidratada:* Fuerza y cerebro. 5g/día.")
-        st.write("- *Proteína en Polvo:* Solo si no llegas a tu meta con comida.")
-    with col2:
-        st.subheader("? Lo que NO necesitas")
-        st.write("- *BCAAs:* Si comes huevo/carne, son agua cara.")
-        st.write("- *Quemadores de Grasa:* Son solo cafeína cara. El déficit manda.")
-
-# --- 5. MENTALIDAD Y FÁRMACOS ---
-elif menu == "5. Mentalidad y Fármacos":
-    st.header("?? El 'Yo' de Ayer vs El 'Yo' de Hoy")
-    st.write("> *No compites con el de la foto. Compites con quien eras hace 24 horas.*")
-    
-    st.subheader("?? La Realidad de los Fármacos (PEDs)")
-    st.markdown("""
-    * *No hay magia:* Los cuerpos de revista tienen ejércitos de médicos y luz profesional.
-    * *Riesgo Real:* Inyectarse sin un examen endocrino previo puede apagar tu sistema natural para siempre.
-    * *Nuestra postura:* Antes de un fármaco, ve al Endocrinólogo. La salud no se negocia por un músculo temporal.
-    """)
-    
-
-# --- 6. EXPORTAR PROGRESO (PRIVACIDAD) ---
-elif menu == "6. Exportar Progreso":
-    st.header("?? Exportar a CSV para Excel")
-    st.write("Tus datos son tuyos. Descárgalos y súbelos a tu Google Drive.")
-    
-    if 'user_data' in st.session_state:
-        df = pd.DataFrame([st.session_state['user_data']])
-        df['fecha'] = date.today()
-        
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("?? Descargar Progreso", data=csv, file_name=f"habito_acero_{date.today()}.csv", mime="text/csv")
-    else:
-        st.warning("No hay datos para exportar.")
+st.warning("⚠️ Nota: Sube este archivo al chat cada 30 días. Yo (Gemini) analizaré tu prog
